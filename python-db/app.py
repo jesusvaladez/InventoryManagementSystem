@@ -18,13 +18,86 @@ db.init_app(app)
 def create_tables():
     db.create_all()
 
-# Gets all prducts
+# Gets all products
 @app.route('/api/products', methods=['GET'])
 def get_products():
     products = Product.query.all()
     return jsonify([product.to_dict() for product in products])
 
 # Gets a certain product
+@app.route('/api/products/<int:product_id>', methods=['GET'])
+def get_product(product_id):
+    product = Product.query.get_or_404(product_id)
+    return jsonify(product.to_dict())
+
+# Creates a new product
+@app.route('/api/products', methods=['POST'])
+def create_product():
+    data = request.json
+
+    if not data or not data.get('name') or not data.get('sku'):
+        return jsonify({'error': 'Name and SKU are required'}), 400
+
+    # Checks if product SKU exists
+    existing_product = Product.query.filter_by(sku=data.get('sku')).first()
+    if existing_product:
+        return jsonify(({'error': 'Product with this SKU already exists'})), 400
+
+    # Finally, create the product
+    new_product = Product(
+        name=data.get('name'),
+        description=data.get('description', ''),
+        sku=data.get('sku'),
+        price=data.get('price', 0.0),
+        quantity=data.get('quantity', 0)
+    )
+
+    # Add it to database
+    db.session.add(new_product)
+    db.session.commit()
+
+    return jsonify(new_product.to_dict()), 201
+
+@app.route('/api/products/<int:product_id>', methods=['PUT'])
+def update_product(product_id):
+
+    # We get the product that we're updating
+    product = Product.query.get(product_id)
+
+    # If product does not exist or is invalid
+    if not product:
+        return jsonify({'error': 'Product does not already exist'}), 404
+
+    # If product does exist
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data used or provided'}), 400
+
+    if 'name' in data:
+        product.name = data['name']
+
+    if 'description' in data:
+        Product.description =data['description']
+        db.session.commit()
+
+    if 'sku' in data:
+        Product.sku = data['sku']
+        db.session.commit()
+
+    if 'price' in data:
+        Product.price = data['price']
+        db.session.commit()
+
+    if 'quantity' in data:
+        Product.quantity = data['quantity']
+        db.session.commit()
+
+    return jsonify(product.to_dict()), 201
+
+@app.route('/api/products/<int:product_id>', methods=['delete'])
+def delete_product(product_id):
+
+
 
 
 
