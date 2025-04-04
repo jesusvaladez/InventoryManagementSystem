@@ -75,39 +75,33 @@ def update_product(product_id):
 
     if 'name' in data:
         product.name = data['name']
-
     if 'description' in data:
-        Product.description =data['description']
-        db.session.commit()
-
+        product.description =data['description']
     if 'sku' in data:
-        Product.sku = data['sku']
-        db.session.commit()
-
+        product.sku = data['sku']
     if 'price' in data:
-        Product.price = data['price']
-        db.session.commit()
-
+        product.price = data['price']
     if 'quantity' in data:
-        Product.quantity = data['quantity']
-        db.session.commit()
+        product.quantity = data['quantity']
 
-    return jsonify(product.to_dict()), 201
+    db.session.commit()
+    return jsonify(product.to_dict()), 200
 
-@app.route('/api/products/<int:product_id>', methods=['delete'])
+@app.route('/api/products/<int:product_id>', methods=['DELETE'])
 def delete_product(product_id):
 
+    # Get the product we're deleting
+    product = Product.query.get(product_id)
 
+    if not product:
+        return jsonify({'error': 'product not found'}), 404
 
+    # Remove product from the database
+    db.session.delete(product)
+    # Commit changes
+    db.session.commit()
 
-
-
-
-
-
-
-
-
+    return jsonify({'message': f'Product: {product_id} deleted successfully'}), 200
 
 # Test route
 @app.route('/')
