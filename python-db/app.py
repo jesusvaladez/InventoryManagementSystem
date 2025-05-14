@@ -1,4 +1,6 @@
 from flask import Flask, jsonify, request
+
+from models.category import Category
 from models.product import db, Product
 import os
 
@@ -58,6 +60,7 @@ def create_product():
 
     return jsonify(new_product.to_dict()), 201
 
+# Updates product based on its ID and whether it exists
 @app.route('/api/products/<int:product_id>', methods=['PUT'])
 def update_product(product_id):
 
@@ -87,6 +90,7 @@ def update_product(product_id):
     db.session.commit()
     return jsonify(product.to_dict()), 200
 
+# Deletes a certain product based on the ID chosen
 @app.route('/api/products/<int:product_id>', methods=['DELETE'])
 def delete_product(product_id):
 
@@ -107,6 +111,84 @@ def delete_product(product_id):
 @app.route('/')
 def index():
     return jsonify({'message': 'Inventory API is running'})
+
+# Gets all categories
+@app.route('/api/categories', methods=['GET'])
+def  get_categories():
+    categories = Category.query.all()
+    return jsonify([category.to_dict() for category in categories])
+
+# Gets certain category
+@app.route('/api/categories/<int:category_id>', methods=['GET'])
+def get_category(category_id):
+    category = Category.query.get_or_404(category_id)
+    return jsonify(category.to_dict())
+
+# Creates a new category
+@app.route('/api/categories', methods=['POST'])
+def create_category():
+    data = request.json
+
+    if not data or not data.get('name'):
+        return jsonify({'error': 'Name is required'}), 400
+
+    existing_category = Category.query.filter_by(name=data.get('name')).first()
+    if existing_category:
+        return jsonify({'error': 'Category with that name already exists'}), 400
+
+    new_category = Category(
+        name = data.get('name'),
+        description = data.get('description', '')
+    )
+
+    db.session.add(new_category)
+    db.session.commit()
+
+    return jsonify(new_category.to_dict()), 201
+
+# Updates existing category
+@app.route('/api/categories/<int:category_id>', methods=['PUT'])
+def update_category(category_id):
+
+    # Gets category we're trying to update
+    category = Category.query.get(category_id)
+    # Error check
+    if not category:
+        return jsonify({'error': 'Category does not exist'}), 404
+
+    # For if category exists
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data used or provided'}), 400
+
+    if 'name' in data and data['name'] != category.name:
+        existing_category = Category.query.filter_by(name=data['name']).first()
+        if existing_category and existing_category.id != category_id:
+            return jsonify({'error': 'Category with that name already exists'}), 400
+        category.name = data['name']
+
+    if 'description' in data:
+        category.description = data['description']
+
+    db.session.commit()
+    return jsonify(category.to_dict()), 200
+
+# Delete a category
+@app.route('/api/categories/<int:category_id>', methods=['DELETE'])
+def delete_category(category_id):
+    # Find the Category ID
+    category = Category.query.get(category_id)
+    if not category:
+        return jsonify({'error': 'Category not found'}), 404
+
+    # Check if Category has products connected to it
+
+
+
+
+
+
+
 
 # Run the app and test
 if __name__ == '__main__':
