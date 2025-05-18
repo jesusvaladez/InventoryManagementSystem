@@ -114,7 +114,7 @@ def index():
 
 # Gets all categories
 @app.route('/api/categories', methods=['GET'])
-def  get_categories():
+def get_categories():
     categories = Category.query.all()
     return jsonify([category.to_dict() for category in categories])
 
@@ -122,7 +122,31 @@ def  get_categories():
 @app.route('/api/categories/<int:category_id>', methods=['GET'])
 def get_category(category_id):
     category = Category.query.get_or_404(category_id)
-    return jsonify(category.to_dict())
+
+    included_products = request.args.get('include_products', '').lower() == 'true'
+
+    result = category.to_dict()
+
+    # Add products if requested
+    if included_products:
+        products = Product.query.filter_by(category_id = category_id).all()
+        result['products'] = [product.to_dict() for product in products]
+
+    return jsonify(result)
+
+# Gets all products in a category
+@app.route('/api/categories/<int:category_id>/products', methods=['GET'])
+def get_category_products(category_id):
+    # Error check to see if category exists
+    category = Category.query.get_or_404(category_id)
+
+    # Gets all the products in the category
+    products = Product.query.filter_by(category_id=category_id).all()
+
+    return jsonify({
+        'category': category.to_dict(),
+        'products': [product.to_dict() for product in products]
+    })
 
 # Creates a new category
 @app.route('/api/categories', methods=['POST'])
@@ -176,12 +200,28 @@ def update_category(category_id):
 # Delete a category
 @app.route('/api/categories/<int:category_id>', methods=['DELETE'])
 def delete_category(category_id):
+
     # Find the Category ID
     category = Category.query.get(category_id)
     if not category:
         return jsonify({'error': 'Category not found'}), 404
 
     # Check if Category has products connected to it
+    connected_products = Product.query.filter_by(category_id=category_id).all()
+
+    # Sets category_id to NULL if they are connected
+    if connected_products:
+        for product in connected_products:
+            product.category_id = None
+            # Commit after deleting the category
+
+    # Remove the category from the db
+    db.sesson.delete(category)
+
+    # Commit all changes made
+    db.session.commit()
+
+    return jsonify({'message': f'Category {category_id} deleted successfully. {len(connected_products)} products were updated'}), 200
 
 
 
