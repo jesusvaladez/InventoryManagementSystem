@@ -6,6 +6,10 @@ public class Category {
     private String description;
     private String createdAt;
 
+    public Category() {
+
+    }
+
     public Category(int id, String name, String description, String createdAt) {
         this.id = id;
         this.name = name;

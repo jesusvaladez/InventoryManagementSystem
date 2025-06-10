@@ -11,6 +11,9 @@ public class Product {
     private String categoryName;
     private String createdAt;
 
+    public Product() {
+    }
+
     // Constructor
     public Product(String name, String description, String sku, double price
                     , int quantity, Integer categoryID, String categoryName, String createdAt) {
@@ -23,10 +26,6 @@ public class Product {
          this.categoryName = categoryName;
          this.createdAt = createdAt;
     }
-
-    public Product() {
-    }
-
 
     // Get methods
     public int getId() {
@@ -41,7 +40,7 @@ public class Product {
         return description;
     }
 
-    public String getSKU() {
+    public String getSku() {
         return sku;
     }
 
@@ -53,7 +52,7 @@ public class Product {
         return quantity;
     }
 
-    public Integer getCategoryID() {
+    public Integer getCategoryId() {
         return categoryId;
     }
 
@@ -92,8 +91,8 @@ public class Product {
         this.quantity = new_quantity;
     }
 
-    public void setCategoryID(Integer new_Category_ID) {
-        this.categoryId = new_Category_ID;
+    public void setCategoryID(Integer new_Category_Id) {
+        this.categoryId = new_Category_Id;
     }
 
     public void setCategoryName(String new_Category_Name) {
