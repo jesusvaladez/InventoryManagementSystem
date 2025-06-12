@@ -128,6 +128,7 @@ public class MainWindow extends JFrame {
         // Adds all menus to the nav bar
         menuBar.add(FileMenu);
         menuBar.add(ViewMenu);
+        menuBar.add(HelpMenu);
         setJMenuBar(menuBar);
     }
 
