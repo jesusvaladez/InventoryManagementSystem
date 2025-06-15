@@ -19,12 +19,29 @@ public class ProductPanel extends JPanel {
 
     public ProductPanel() {
         productApiClient = new ProductApiClient();
-
-
+        initializeComponents();
+        setupLayout();
+        setupEventHandlers();
+        loadProducts();
     }
 
     private void initializeComponents() {
+        tableModel = new ProductTableModel();
+        productTable = new JTable(tableModel);
 
+        // Configure the row height and selection mode
+        productTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        productTable.setRowHeight(25);
+
+        // Make the buttons
+        refreshButton = new JButton("Refresh");
+        addButton = new JButton("Add Product");
+        editButton = new JButton("Edit Product");
+        deleteButton = new JButton("Delete Product");
+
+        // TODO: Make these temporary not work (change later)
+        editButton.setEnabled(false);
+        deleteButton.setEnabled(false);
     }
 
     private void setupLayout() {
@@ -43,15 +60,15 @@ public class ProductPanel extends JPanel {
 
     }
 
-    private void deleteProduct() {
+    private void deleteProduct(int productId) {
 
     }
 
-    private void showErrorMessages(String message, Exception e) {
+    private void showErrorMessage(String message, Exception e) {
 
     }
 
-    private class ProductTableModel() extends AbstractTableModel {
+    private class ProductTableModel extends AbstractTableModel {
 
     }
 }
