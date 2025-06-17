@@ -4,6 +4,7 @@ import main.java.api.ProductApiClient;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import java.awt.*;
 
 /**
  * Purpose: Will display products in a table and deal w CRUD operations
@@ -45,7 +46,15 @@ public class ProductPanel extends JPanel {
     }
 
     private void setupLayout() {
+        setLayout(new BorderLayout());
 
+        JScrollPane scrollPane = new JScrollPane(productTable);
+        scrollPane.setPreferredSize(new Dimension(800, 400));
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Button
+        JPanel buttonPanel = createButtonPanel();
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
     private JPanel createButtonPanel() {
