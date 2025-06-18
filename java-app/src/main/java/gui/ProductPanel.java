@@ -8,6 +8,7 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 /**
  * Purpose: Will display products in a table and deal w CRUD operations
@@ -132,25 +133,132 @@ public class ProductPanel extends JPanel {
                 "Edit Product functionality will be implemented later",
                 "Edit Product", JOptionPane.INFORMATION_MESSAGE);
     }
-    private void deleteProduct() {
+    private void deleteProduct(int productId) {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
+        SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                return productApiClient.deleteProduct(productId);
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    boolean success = get();
+                    if (success) {
+                        JOptionPane.showMessageDialog(ProductPanel.this,
+                                "Product deleted successfully",
+                                "Success", JOptionPane.INFORMATION_MESSAGE);
+                        loadProducts();
+                    }
+                } catch (Exception e) {
+                    showErrorMessage("Failed to delete", e);
+                } finally {
+                    setCursor(Cursor.getDefaultCursor());
+                }
+            }
+        };
+        worker.execute();
     }
 
 
 
     private void loadProducts() {
+        // Show current state
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        refreshButton.setEnabled(true);
+        refreshButton.setText("Loading...");
 
-    }
+        // Perform API call in background
+        SwingWorker<List<Product>, Void> worker = new SwingWorker<List<Product>, Void>() {
+            @Override
+            protected List<Product> doInBackground() throws Exception {
+                return productApiClient.getAllProducts();
+            }
 
-    private void deleteProduct(int productId) {
-
+            @Override
+            protected void done() {
+                try {
+                    List<Product> products = get();
+                    tableModel.setProducts(products);
+                } catch (Exception e) {
+                    showErrorMessage("Failed to load products", e);
+                } finally {
+                    setCursor(Cursor.getDefaultCursor());
+                    refreshButton.setEnabled(true);
+                    refreshButton.setText("Refresh");
+                }
+            }
+        };
+        worker.execute();
     }
 
     private void showErrorMessage(String message, Exception e) {
-
+        String entireMessage = message + "\n\nError Details: " + e.getMessage();
+        JOptionPane.showMessageDialog(this,
+                entireMessage, "Error", JOptionPane.ERROR_MESSAGE);
+        System.err.println(message + ": " + e.getMessage());
+        e.printStackTrace();
     }
 
-    private class ProductTableModel extends AbstractTableModel {
+    private class ProductTableModel extends AbstractTableModel{
+        private List<Product> products;
+        private final String[] columnNames = {"ID", "Name",  "SKU", "Price",
+                                              "Quantity", "Category"};
 
+        public ProductTableModel() {
+            this.products = new ArrayList<>();
+        }
+
+        public void setProducts(List<Product> products) {
+            this.products = products != null ? products : new ArrayList<>();
+            fireTableDataChanged();
+        }
+
+        public Product getProductAt(int rowIndex) {
+            return products.get(rowIndex);
+        }
+
+        @Override
+        public int getRowCount() {
+            return products.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columnNames[column];
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            Product product = products.get(rowIndex);
+            switch(columnIndex) {
+                case 0 : return product.getId();
+                case 1 : return product.getName();
+                case 2 : return product.getSku();
+                case 3 : return String.format("$%.2f", product.getPrice());
+                case 4 : return product.getQuantity();
+                case 5 : return product.getCategoryName() != null ?
+                                product.getCategoryName() : "Uncategorized";
+                default : return null;
+            }
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            switch(columnIndex) {
+                // ID
+                case 0 : return Integer.class;
+                // Index
+                case 4 : return Integer.class;
+                default : return String.class;
+            }
+        }
     }
 }
