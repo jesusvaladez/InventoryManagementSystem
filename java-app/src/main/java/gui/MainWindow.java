@@ -19,7 +19,7 @@ public class MainWindow extends JFrame {
 
     private void initalizedWindow() {
         setTitle("Inventerio");
-        setSize(750, 500);
+        setSize(1200, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(true);
@@ -136,10 +136,7 @@ public class MainWindow extends JFrame {
         tabbedPane = new JTabbedPane();
 
         // Products tab
-        JPanel productsPanel = new JPanel(new BorderLayout());
-        JLabel productsLabel = new JLabel("Products will be shown here", JLabel.CENTER);
-        productsLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        productsPanel.add(productsLabel, BorderLayout.CENTER);
+        ProductPanel productPanel = new ProductPanel();
 
         // Categories tab
         JPanel categoriesPanel = new JPanel(new BorderLayout());
@@ -147,7 +144,7 @@ public class MainWindow extends JFrame {
         categoriesLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         categoriesPanel.add(categoriesLabel, BorderLayout.CENTER);
 
-        tabbedPane.addTab("Products", productsPanel);
+        tabbedPane.addTab("Products", productPanel);
         tabbedPane.addTab("Categories", categoriesPanel);
 
         add(tabbedPane, BorderLayout.CENTER);
