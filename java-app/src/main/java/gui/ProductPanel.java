@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Purpose: Will display products in a table and deal w CRUD operations
@@ -171,17 +172,17 @@ public class ProductPanel extends JPanel {
         refreshButton.setText("Loading...");
 
         // Perform API call in background
-        SwingWorker<List<Product>, Void> worker = new SwingWorker<List<Product>, Void>() {
+        SwingWorker<java.util.List<Product>, Void> worker = new SwingWorker<java.util.List<Product>, Void>() {
             @Override
-            protected List<Product> doInBackground() throws Exception {
+            protected java.util.List<Product> doInBackground() throws Exception {
                 return productApiClient.getAllProducts();
             }
 
             @Override
             protected void done() {
                 try {
-                    List<Product> products = get();
-                    tableModel.setProducts(products);
+                    java.util.List<Product> products = get();
+                    tableModel.setProducts((java.util.List<Product>) products);
                 } catch (Exception e) {
                     showErrorMessage("Failed to load products", e);
                 } finally {
@@ -211,7 +212,7 @@ public class ProductPanel extends JPanel {
             this.products = new ArrayList<>();
         }
 
-        public void setProducts(List<Product> products) {
+        public void setProducts(java.util.List<Product> products) {
             this.products = products != null ? products : new ArrayList<>();
             fireTableDataChanged();
         }
