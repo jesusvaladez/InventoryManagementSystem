@@ -14,6 +14,17 @@ import java.util.List;
  * - Handles both Add and Edit feature information
  */
 public class ProductFormDialog extends JDialog {
+    private JTextField name;
+    private JTextField sku;
+    private JTextField description;
+    private JTextField price;
+    private JTextField quantity;
+    private JComboBox<Category> selection;
+    private JButton save;
+    private JButton cancel;
+    private Product currentProduct;
+    private boolean isEditMode;
+    private boolean wasSaved;
 
     /**
      * Constructor for Add feature
