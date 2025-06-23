@@ -25,6 +25,7 @@ public class ProductFormDialog extends JDialog {
     private Product currentProduct;
     private boolean isEditMode;
     private boolean wasSaved;
+    private List<Category> categories;
 
     /**
      * Constructor for Add feature
@@ -32,7 +33,7 @@ public class ProductFormDialog extends JDialog {
      * @param categories List of available categories for dropdown
      */
     public ProductFormDialog(JFrame parent, List<Category> categories) {
-
+        this(parent, categories, null);
     }
 
     /**
@@ -42,14 +43,45 @@ public class ProductFormDialog extends JDialog {
      * @param product The product to edit
      */
     public ProductFormDialog(JFrame parent, List<Category> categories, Product product) {
+        super(parent, "title", true);
 
+        this.categories = categories;
+        this.currentProduct = product;
+        this.isEditMode = (product != null);
+        this.wasSaved = false;
+
+        setTitle(isEditMode ? "Edit Product" : "Add Product");
+
+        initializeComponents();
+        setupLayout();
+        setupEventHandlers();
+
+        if (isEditMode) {
+            populateFields();
+        }
+
+        pack();
+        setLocationRelativeTo(parent);
     }
 
     /**
      * All form components
      */
     private void initializeComponents() {
+        name = new JTextField(20);
+        sku = new JTextField(20);
+        description = new JTextField(20);
+        price = new JTextField(10);
+        quantity = new JTextField(20);
+        selection = new JComboBox<>();
 
+        save = new JButton(isEditMode ? "Update" : "Add");
+        cancel = new JButton("Cancel");
+
+        selection.addItem(null);
+        for (Category category : categories) {
+            selection.addItem(category);
+        }
     }
 
     /**
