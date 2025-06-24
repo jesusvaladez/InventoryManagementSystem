@@ -4,6 +4,7 @@ import main.java.model.Category;
 import main.java.model.Product;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 
 
@@ -88,7 +89,93 @@ public class ProductFormDialog extends JDialog {
      * Creates a form with labels and inputs
      */
     private void setupLayout() {
+        setLayout(new BorderLayout());
 
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Row 0: Name field
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.0;
+        formPanel.add(new JLabel("Name:*"), gbc);
+        gbc.gridx = 1; gbc.gridy = 0;
+        gbc.weightx = 1.0;  // Field expands to fill space
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        formPanel.add(name, gbc);
+
+        // Row 1: SKU field
+        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.weightx = 0.0;
+        gbc.fill = GridBagConstraints.NONE;
+        formPanel.add(new JLabel("SKU:*"), gbc);
+        gbc.gridx = 1; gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        formPanel.add(sku, gbc);
+
+        // Row 2: Description field
+        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.weightx = 0.0;
+        gbc.fill = GridBagConstraints.NONE;
+        formPanel.add(new JLabel("Description:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 2;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        formPanel.add(description, gbc);
+
+        // Row 3: Price field
+        gbc.gridx = 0; gbc.gridy = 3;
+        gbc.weightx = 0.0;
+        gbc.fill = GridBagConstraints.NONE;
+        formPanel.add(new JLabel("Price:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 3;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        formPanel.add(price, gbc);
+
+        // Row 4: Quantity field
+        gbc.gridx = 0; gbc.gridy = 4;
+        gbc.weightx = 0.0;
+        gbc.fill = GridBagConstraints.NONE;
+        formPanel.add(new JLabel("Quantity:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 4;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        formPanel.add(quantity, gbc);
+
+        // Row 5: Category dropdown
+        gbc.gridx = 0; gbc.gridy = 5;
+        gbc.weightx = 0.0;
+        gbc.fill = GridBagConstraints.NONE;
+        formPanel.add(new JLabel("Category:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 5;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        formPanel.add(selection, gbc);
+
+        // Create button panel
+        JPanel buttonPanel = createButtonPanel();
+
+        // Add panels to main dialog (structured properly for now)
+        add(formPanel, BorderLayout.CENTER);   // Form in center
+        add(buttonPanel, BorderLayout.SOUTH);  // Buttons at bottom
+    }
+
+    private JPanel createButtonPanel() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+
+        panel.add(save);
+        panel.add(Box.createHorizontalStrut(10));
+        panel.add(cancel);
+
+        return panel;
     }
 
     /**
