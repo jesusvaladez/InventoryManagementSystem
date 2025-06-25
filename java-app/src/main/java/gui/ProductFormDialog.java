@@ -5,6 +5,9 @@ import main.java.model.Product;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.List;
 
 
@@ -178,11 +181,66 @@ public class ProductFormDialog extends JDialog {
         return panel;
     }
 
+
     /**
      * Actions that occur when buttons are pressed
      */
     private void setupEventHandlers() {
+        // Save button functionality
+        save.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveFunctionality();
+            }
+        });
 
+        // Cancel button functionality
+        cancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cancelFunctionality();
+            }
+        });
+
+        getRootPane().setDefaultButton(save);
+        setupKeyboardCuts();
+    }
+
+    /**
+     * Method to set up keyboard shortcuts
+     */
+    private void setupKeyboardCuts() {
+        // Esc key button cancels dialog
+        KeyStroke escapeKey = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escapeKey, "ESCAPE");
+        getRootPane().getActionMap().put("ESCAPE", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cancelFunctionality();
+            }
+        });
+    }
+
+    /**
+     * Save function
+     */
+    private void saveFunctionality() {
+        Product validatedProduct = validateAndSave();
+
+        if(validatedProduct != null) {
+            // Validation goes through
+            this.currentProduct = validatedProduct;
+            this.wasSaved = true;
+            dispose();
+        }
+    }
+
+    /**
+     * Cancel function
+     */
+    private void cancelFunctionality() {
+        this.wasSaved = false;
+        dispose();
     }
 
     /**
