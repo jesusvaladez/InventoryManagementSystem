@@ -247,7 +247,38 @@ public class ProductFormDialog extends JDialog {
      * Form fields when editing products
      */
     private void populateFields() {
+        if (currentProduct != null) {
+            return;
+        }
 
+        name.setText(currentProduct.getName() != null ? currentProduct.getName() : "");
+        sku.setText(currentProduct.getSku() != null ? currentProduct.getSku() : "");
+        description.setText(currentProduct.getDescription() != null ? currentProduct.getDescription() : "");
+        price.setText(String.valueOf(currentProduct.getPrice()));
+        quantity.setText(String.valueOf(currentProduct.getQuantity()));
+
+        setCategorySelection();
+    }
+
+    private void setCategorySelection() {
+        Integer productCategoryID = currentProduct.getCategoryId();
+
+        if (productCategoryID == null) {
+            selection.setSelectedItem(null);
+            return;
+        }
+
+        // Ensures the category is matched
+        for (int i = 0; i < selection.getItemCount(); i++) {
+            Category category = selection.getItemAt(i);
+
+            if (category != null && category.getId() == productCategoryID.intValue()) {
+                selection.setSelectedItem(category);
+                return;
+            }
+        }
+        // Failure to find category if this occurs
+        selection.setSelectedItem(null);
     }
 
     /**
@@ -255,7 +286,101 @@ public class ProductFormDialog extends JDialog {
      * @return Product if validation is successful, null if it fails to do so
      */
     private Product validateAndSave() {
-        return null;
+        // 1. Get values from input
+        String nameVal = name.getText().trim();
+        String skuVal = sku.getText().trim();
+        String descriptionVal = description.getText().trim();
+        String priceVal = price.getText().trim();
+        String quantityVal = quantity.getText().trim();
+        Category chosenCategory = (Category) selection.getSelectedItem();
+
+        // 2. Validate data
+        if (nameVal.isEmpty()) {
+            showErrorDialog("Product requires a name");
+            name.requestFocus();
+            return null;
+        }
+
+        if (skuVal.isEmpty()) {
+            showErrorDialog("SKU required");
+            sku.requestFocus();
+            return null;
+        }
+
+        // 3. Parse numerical data
+        double priceNumber;
+        try {
+            if (priceVal.isEmpty()) {
+                priceNumber = 0.0;
+            } else {
+                priceNumber = Double.parseDouble(priceVal);
+                if (priceNumber < 0) {
+                    showErrorDialog("Price cannot be a negative amount");
+                    price.requestFocus();
+                    return null;
+                }
+            }
+        } catch (NumberFormatException e) {
+            showErrorDialog("Price has to be a valid number");
+            price.requestFocus();
+            return null;
+        }
+
+        int quantityNumber;
+        try {
+            if (quantityVal.isEmpty()) {
+                quantityNumber = 0;
+            } else {
+                quantityNumber = Integer.parseInt(quantityVal);
+                if (quantityNumber < 0) {
+                    showErrorDialog("Quantity cannot be a negative value");
+                    quantity.requestFocus();
+                    return null;
+                }
+            }
+        } catch (NumberFormatException e) {
+            showErrorDialog("Quantity must be a valid input");
+            quantity.requestFocus();
+            return null;
+        }
+
+        // 4. Create and update Product object
+        if (isEditMode) {
+            // For updating product
+            currentProduct.setName(nameVal);
+            currentProduct.setSku(skuVal);
+            currentProduct.setDescription(descriptionVal);
+            currentProduct.setPrice(Double.parseDouble(priceVal));
+            currentProduct.setQuantity(Integer.parseInt(quantityVal));
+
+            // TODO: Fix later
+            if (chosenCategory != null) {
+                currentProduct.setCategoryID(chosenCategory.getId());
+                currentProduct.setCategoryName(chosenCategory.getName());
+            } else {
+                currentProduct.setCategoryID(null);
+                currentProduct.setCategoryName(null);
+            }
+            return currentProduct;
+
+        } else {
+            // For creating a product
+            Product newProduct = new Product();
+            newProduct.setName(nameVal);
+            newProduct.setSku(skuVal);
+            newProduct.setDescription(descriptionVal);
+            newProduct.setPrice(Double.parseDouble(priceVal));
+            newProduct.setQuantity(Integer.parseInt(quantityVal));
+
+            if (chosenCategory != null) {
+                newProduct.setCategoryID(chosenCategory.getId());
+                newProduct.setCategoryName(chosenCategory.getName());
+            } else {
+                newProduct.setCategoryID(null);
+                newProduct.setCategoryName(null);
+            }
+            return newProduct;
+        }
     }
 
     /**
