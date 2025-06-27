@@ -383,12 +383,49 @@ public class ProductFormDialog extends JDialog {
         }
     }
 
+    // OPTIONAL METHOD
+    private boolean isSKUunique(String skuVal) {
+        // TODO: Implement later
+        return true;
+    }
+
+    /**
+     * Input checker
+     */
+    private boolean validateInput(String nameValue, String skuValue, double priceValue, int quantityValue) {
+
+        if (skuValue.length() < 3) {
+            showErrorDialog("SKU must be greater than 3 characters");
+            sku.requestFocus();
+            return false;
+        }
+
+        if (nameValue.length() > 100) {
+            showErrorDialog("Product name cannot be larger than 100 characters");
+            name.requestFocus();
+            return false;
+        }
+
+        if (priceValue > 100000) {
+            showErrorDialog("Price cannot be $100,000");
+            price.requestFocus();
+            return false;
+        }
+        // If all passes
+        return true;
+    }
+
     /**
      * Shows error message to user
      * @param message The error to display to user
      */
     private void showErrorDialog(String message) {
-
+        JOptionPane.showMessageDialog(
+                this,
+                message,
+                "Validation error",
+                JOptionPane.ERROR_MESSAGE
+        );
     }
 
     /**
@@ -396,7 +433,7 @@ public class ProductFormDialog extends JDialog {
      * @return true if saved, false otherwise
      */
     private boolean wasSaved() {
-        return false;
+        return wasSaved;
     }
 
     /**
@@ -404,6 +441,33 @@ public class ProductFormDialog extends JDialog {
      * @return Product data
      */
     public Product getProduct() {
-        return null;
+        return wasSaved ? currentProduct : null;
+    }
+
+    public void resetForm() {
+        name.setText("");
+        sku.setText("");
+        description.setText("");
+        price.setText("");
+        quantity.setText("");
+        selection.setSelectedItem(null);
+        wasSaved = false;
+    }
+
+    private void setInitialFocus() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                name.requestFocus();
+            }
+        });
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        if (visible) {
+            setInitialFocus();
+        }
     }
 }
