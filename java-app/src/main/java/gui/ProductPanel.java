@@ -115,25 +115,18 @@ public class ProductPanel extends JPanel {
         });
     }
 
-    private void addProductMessage() {
-        // TODO: Make this actually add a product
-        // Placeholder for now
-        JOptionPane.showMessageDialog(this,
-                "Add Product functionality will be implemented later",
-                "Add Prduct", JOptionPane.INFORMATION_MESSAGE);
+    private void addProduct() {
+        showProductDialog(null);
     }
-    private void editProductMessage() {
+
+    private void editProduct() {
         int selectedRow = productTable.getSelectedRow();
         if (selectedRow == -1) return;
 
         Product selectedProduct = tableModel.getProductAt(selectedRow);
-
-        // TODO: Make this edit product
-        // Placeholder for now
-        JOptionPane.showMessageDialog(this,
-                "Edit Product functionality will be implemented later",
-                "Edit Product", JOptionPane.INFORMATION_MESSAGE);
+        showProductDialog(selectedProduct);
     }
+
     private void deleteProduct(int productId) {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
