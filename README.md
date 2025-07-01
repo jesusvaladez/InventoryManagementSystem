@@ -1,4 +1,4 @@
-# InventoryManagementSystem
+#  Inventorio – Inventory Management System 
 
 *A work-in-progress inventory management application with a Python Flask API backend and Java Swing GUI frontend.*
 
