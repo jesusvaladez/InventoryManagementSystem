@@ -92,6 +92,26 @@ public class CategoryApiClient {
      * @throws Exception If deletion fails
      */
     public boolean deleteCategory(int categoryId) throws Exception {
+        try {
+            apiClient.sendDeleteRequest("api/categories" + categoryId);
+            return true;
+        } catch (Exception e) {
+            System.err.println("Deletion of Category has failed");
+            throw new Exception("Unable to delete Category", e);
+        }
+    }
 
+    public List<Category> searchCategories(String searchQuery) throws Exception {
+        try {
+            String endpoint = "/api/categories?search=" + java.net.URLEncoder.encode(searchQuery, "UTF-8");
+            Type listType = new TypeToken<List<Category>>(){}.getType();
+            String jsonResponse = apiClient.sendGetRequest(endpoint);
+            List<Category> categories = apiClient.fromJson(jsonResponse, (Class<List<Category>>) listType);
+
+            return categories != null ? categories : new ArrayList<>();
+        } catch (Exception e) {
+            System.err.println("Failed to search for Category: " + e.getMessage());
+            throw new Exception("Unable to search for the Category", e);
+        }
     }
 }
