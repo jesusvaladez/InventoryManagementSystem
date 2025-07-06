@@ -1,8 +1,10 @@
 package main.java.api;
 
 
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import main.java.model.Category;
+import main.java.model.Product;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -31,7 +33,8 @@ public class CategoryApiClient {
             List<Category> categories = apiClient.fromJson(jsonResponse, (Class<List<Category>>) listType);
             return categories != null ? categories : new ArrayList<>();
         } catch (Exception e) {
-            throw new Exception("Unable to get categories");
+            System.err.println("Failed to get all Categories: " + e.getMessage());
+            throw new Exception("Unable to get Categories", e);
         }
     }
 
@@ -43,7 +46,7 @@ public class CategoryApiClient {
      */
     public Category getCategory(int categoryId) throws Exception {
         try {
-            String jsonResponse = apiClient.sendGetRequest("api/categories/" + categoryId);
+            String jsonResponse = apiClient.sendGetRequest("/api/categories/" + categoryId);
             return apiClient.fromJson(jsonResponse, Category.class);
         } catch (Exception e) {
             System.err.println("Unable to get Category " + categoryId);
@@ -60,7 +63,7 @@ public class CategoryApiClient {
     public Category createACategory(Category category) throws Exception {
         try {
             String jsonBody = apiClient.toJson(category);
-            String jsonResponse = apiClient.sendPostRequest("api/categories", jsonBody);
+            String jsonResponse = apiClient.sendPostRequest("/api/categories", jsonBody);
             return apiClient.fromJson(jsonResponse, Category.class);
         } catch (Exception e) {
             System.err.println("Failed to create Category" + e.getMessage());
@@ -74,10 +77,10 @@ public class CategoryApiClient {
      * @return The edited Category
      * @throws Exception If updating fails
      */
-    public Category updateCategory(Category category, int CategoryId) throws Exception {
+    public Category updateCategory(int CategoryId, Category category) throws Exception {
         try {
             String jsonBody = apiClient.toJson(category);
-            String jsonResponse = apiClient.sendPutRequest("api/categories/" + CategoryId, jsonBody);
+            String jsonResponse = apiClient.sendPutRequest("/api/categories/" + CategoryId, jsonBody);
             return apiClient.fromJson(jsonResponse, Category.class);
         } catch (Exception e) {
             System.err.println("Failed to update Category " + CategoryId);
@@ -93,7 +96,7 @@ public class CategoryApiClient {
      */
     public boolean deleteCategory(int categoryId) throws Exception {
         try {
-            apiClient.sendDeleteRequest("api/categories" + categoryId);
+            apiClient.sendDeleteRequest("/api/categories/" + categoryId);
             return true;
         } catch (Exception e) {
             System.err.println("Deletion of Category has failed");
@@ -112,6 +115,31 @@ public class CategoryApiClient {
         } catch (Exception e) {
             System.err.println("Failed to search for Category: " + e.getMessage());
             throw new Exception("Unable to search for the Category", e);
+        }
+    }
+
+    /**
+     * Gets Products in a Category
+     * @param categoryId The Category ID
+     * @return List of Products in the Category
+     * @throws Exception If retrieval fails
+     */
+    public List<Product> getCategoryProducts(int categoryId) throws Exception {
+        try {
+            String endpoint = "/api/categories/" + categoryId + "/products";
+            String jsonResponse = apiClient.sendGetRequest(endpoint);
+
+            // For parsing
+            JsonObject responseObj = apiClient.fromJson(jsonResponse, JsonObject.class);
+            String productsJson = responseObj.get("products").toString();
+
+            Type listType = new TypeToken<List<Product>>(){}.getType();
+            List<Product> products = apiClient.fromJson(productsJson, (Class<List<Product>>) listType);
+
+            return products != null ? products : new ArrayList<>();
+        } catch (Exception e) {
+            System.err.println("Failed to find Products in Category " + categoryId + ": " + e.getMessage());
+            throw new Exception("Unable to retrieve category products", e);
         }
     }
 }
