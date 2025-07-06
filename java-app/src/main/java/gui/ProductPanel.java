@@ -115,18 +115,25 @@ public class ProductPanel extends JPanel {
         });
     }
 
-    private void addProduct() {
-        showProductDialog(null);
+    private void addProductMessage() {
+        // TODO: Make this actually add a product
+        // Placeholder for now
+        JOptionPane.showMessageDialog(this,
+                "Add Product functionality will be implemented later",
+                "Add Prduct", JOptionPane.INFORMATION_MESSAGE);
     }
-
-    private void editProduct() {
+    private void editProductMessage() {
         int selectedRow = productTable.getSelectedRow();
         if (selectedRow == -1) return;
 
         Product selectedProduct = tableModel.getProductAt(selectedRow);
-        showProductDialog(selectedProduct);
-    }
 
+        // TODO: Make this edit product
+        // Placeholder for now
+        JOptionPane.showMessageDialog(this,
+                "Edit Product functionality will be implemented later",
+                "Edit Product", JOptionPane.INFORMATION_MESSAGE);
+    }
     private void deleteProduct(int productId) {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
@@ -199,7 +206,7 @@ public class ProductPanel extends JPanel {
     private class ProductTableModel extends AbstractTableModel{
         private List<Product> products;
         private final String[] columnNames = {"ID", "Name",  "SKU", "Price",
-                                              "Quantity", "Category"};
+                "Quantity", "Category"};
 
         public ProductTableModel() {
             this.products = new ArrayList<>();
@@ -239,7 +246,7 @@ public class ProductPanel extends JPanel {
                 case 3 : return String.format("$%.2f", product.getPrice());
                 case 4 : return product.getQuantity();
                 case 5 : return product.getCategoryName() != null ?
-                                product.getCategoryName() : "Uncategorized";
+                        product.getCategoryName() : "Uncategorized";
                 default : return null;
             }
         }
