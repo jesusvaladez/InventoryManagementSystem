@@ -22,7 +22,7 @@ public class CategoryPanel extends JPanel {
     CategoryApiClient categoryApiClient;
 
     public CategoryPanel() {
-        // TODO
+        // TODO Do later
     }
 
     private void initializeComponents() {
